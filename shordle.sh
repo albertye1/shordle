@@ -1,3 +1,5 @@
+clear >$(tty)
+
 # colors
 RED='\033[1;31m'
 YEL='\033[1;33m'
@@ -5,18 +7,23 @@ GRN='\033[1;32m'
 RES='\033[0m'
 
 # pick the random word
-KEY=$(sort -R words.txt | awk 'NR <= 1 { print $1 }')
+KEY=$(sort -R ans.txt | awk 'NR <= 1 { print $1 }')
 # echo $KEY
 
 echo "we have a cool word. it's guaranteed to be 5 letters long. you have six tries. now guess."
 right=0
+error=0
 
 for i in {1..6}; do
 	while true; do
-		echo "attempt $i: input a line"
+		if [[ "$error" == "0" ]]; then 
+			echo "attempt $i: input a line"
+		fi
+		tput sc
 		read word
 		# grep finds if a word occurs in the dictionary
 		if grep -Fxq "$word" words.txt; then
+			error=0
 			resu=""
 			for j in {0..4}; do
 				ch1=${word:$j:1}
@@ -51,6 +58,8 @@ for i in {1..6}; do
 					resu=$resu${RED}$ch1${RES}
 				fi
 			done
+			tput rc;tput el
+			tput sc
 			echo $resu
 			if [ $word == $KEY ]; then
 				echo "${GRN}congrations${RES}"
@@ -58,7 +67,11 @@ for i in {1..6}; do
 			fi
 			break
 		else
+			tput rc;tput el
 			echo "${YEL}word not found${RES}"
+			error=1
+			sleep 0.25
+			tput rc;tput el
 			continue
 		fi
 	done
@@ -71,3 +84,6 @@ if [[ "$right" == "0" ]]; then
 	echo "${RED}ur bad lol${RES}"
 fi
 echo "the word was \"$KEY\""
+
+read -n 1 -s -r -p "Press any key to continue"
+clear >$(tty)
