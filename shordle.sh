@@ -1,3 +1,4 @@
+#!/bin/bash
 clear >$(tty)
 
 # colors
@@ -7,7 +8,7 @@ GRN='\033[1;32m'
 RES='\033[0m'
 
 # pick the random word
-KEY=$(sort -R ans.txt | awk 'NR <= 1 { print $1 }')
+KEY=$(shuf ans.txt | awk 'NR <= 1 { print $1 }')
 # echo $KEY
 
 echo "we have a cool word. it's guaranteed to be 5 letters long. you have six tries. now guess."
@@ -60,7 +61,7 @@ for i in {1..6}; do
 			done
 			tput rc;tput el
 			tput sc
-			echo $resu
+			echo -e $resu
 			if [ $word == $KEY ]; then
 				echo "${GRN}congrations${RES}"
 				right=1
@@ -68,7 +69,7 @@ for i in {1..6}; do
 			break
 		else
 			tput rc;tput el
-			echo "${YEL}word not found${RES}"
+			echo -e "${YEL}word not found${RES}"
 			error=1
 			sleep 0.25
 			tput rc;tput el
@@ -81,7 +82,7 @@ for i in {1..6}; do
 done
 
 if [[ "$right" == "0" ]]; then
-	echo "${RED}ur bad lol${RES}"
+	echo -e "${RED}ur bad lol${RES}"
 fi
 echo "the word was \"$KEY\""
 
